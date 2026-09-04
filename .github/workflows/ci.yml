@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+      - name: Install uv
+        run: pip install --disable-pip-version-check uv==0.6.6
+      - name: Sync deps
+        working-directory: backend
+        run: uv sync --frozen
+      - name: Lint with ruff
+        working-directory: backend
+        run: uv run --frozen --with ruff==0.11.0 ruff check .
+      - name: Import smoke test
+        working-directory: backend
+        run: uv run python -c "from main import app; print(app.title)"
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check if frontend scaffold exists
+        id: check
+        run: |
+          if [ -f frontend/package.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Frontend scaffold not present yet — skipping lint/build."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        if: steps.check.outputs.exists == 'true'
+        with:
+          node-version: "20"
+      - name: Install deps
+        if: steps.check.outputs.exists == 'true'
+        working-directory: frontend
+        run: test -f package-lock.json && npm ci
+      - name: Lint
+        if: steps.check.outputs.exists == 'true'
+        working-directory: frontend
+        run: npm run lint --if-present
+      - name: Build
+        if: steps.check.outputs.exists == 'true'
+        working-directory: frontend
+        run: npm run build --if-present
