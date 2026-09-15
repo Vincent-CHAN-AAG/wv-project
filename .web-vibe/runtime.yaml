@@ -1,12 +1,12 @@
 backend:
-  image: web-vibe-workspace-backend-runner:local
+  image: web-vibe-workspace-backend-runner:latest
   command: >-
     uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /workspace
   containerPort: 8000
   healthPath: /health
 
 frontend:
-  image: web-vibe-workspace-frontend-runner:local
+  image: web-vibe-workspace-frontend-runner:latest
   command: >-
     /node_modules/.bin/vite --host 0.0.0.0 --port 3000 --strictPort
   containerPort: 3000
