@@ -32,6 +32,7 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       hmr: {
         overlay: false,
+        path: '/__vite_hmr'
       },
       proxy: {
         [apiPrefix]: {
