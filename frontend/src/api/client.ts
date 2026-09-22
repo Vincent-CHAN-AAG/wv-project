@@ -1,10 +1,9 @@
 import axios from "axios"
 
 const client = axios.create({
-  baseURL: "/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL: "./api",
+  // Sandboxed previews have an opaque origin and cannot read document cookies.
+  withXSRFToken: false,
 })
 
 // Request interceptor — add shared request metadata here when needed.
