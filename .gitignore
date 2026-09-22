@@ -3,10 +3,10 @@
 /backend/venv
 /backend/.venv
 .env
-backend/db/*.db
-backend/db/*.db-wal
-backend/db/*.db-shm
-backend/db/*.db-journal
+# backend/db/*.db
+# backend/db/*.db-wal
+# backend/db/*.db-shm
+# backend/db/*.db-journal
 
 # Python
 __pycache__/
